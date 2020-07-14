@@ -8,6 +8,7 @@ const int inf = 1e9;
 int board[r + 1][c + 1];
 pair <int,int> start[r + 1][c + 1];
 
+// for each block of 3 x 3 it calculates the start or top left cell id
 void calc_start() {
     for (int i = 1; i <= r; i += 3) {
         for (int j = 1; j <= c; j += 3) {
@@ -20,6 +21,7 @@ void calc_start() {
     }
 }
 
+// for any given cell it calculated the available digits that we may use
 vector <int> get_available(int cr, int cc) {
     vector <int> have(10, 0);
     vector <int> ret;
@@ -37,6 +39,7 @@ vector <int> get_available(int cr, int cc) {
     return ret;
 }
 
+// checks if the current configuration has any conflict or not!
 bool conflict() {
     for (int i = 1; i <= r; i++) {
         vector <int> cnt(10, 0);
@@ -66,19 +69,21 @@ bool conflict() {
     return false;
 }
 
+// get the current best cell to put a value int based on the minimum available options for it
 pair <int,int> get_the_best() {
     pair <int,int> ret = make_pair(-1, -1);
     int mn = inf;
     for (int i = 1; i <= r; i++) {
         for (int j = 1; j <= c; j++) {
             if (board[i][j] != 0) continue;
-            vector < int > can = get_available(i, j);
+            vector <int> can = get_available(i, j);
             if (can.size() < mn) mn = can.size(), ret = make_pair(i, j);
         }
     }
     return ret;
 }
 
+// recursive solver function that takes the number of empty cell available
 bool sudoku_solver(int rem) {
     if (rem == 0) return conflict() ? false : true;
     bool ret = false;
@@ -88,7 +93,7 @@ bool sudoku_solver(int rem) {
     if (board[x][y] != 0) ret |= sudoku_solver(rem);
     else {
         vector <int> can = get_available(x, y);
-        for (int i = 0; i < can.size(); i++) {
+        for (int i = 0; i < (int)can.size(); i++) {
             board[x][y] = can[i];
             ret |= sudoku_solver(rem - 1);
             if (ret) break;
